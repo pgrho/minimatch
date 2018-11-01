@@ -10,6 +10,7 @@
     <Copyright>(c) 2018 shipwreck.jp</Copyright>
     <RepositoryUrl>https://github.com/pgrho/minimatch</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/pgrho/minimatch/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
