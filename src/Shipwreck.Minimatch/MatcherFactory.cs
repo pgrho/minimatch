@@ -183,11 +183,11 @@ namespace Shipwreck.Minimatch
                 return false;
             }
 
-            AppendPattern(pattern, start, i - start, sb);
+            AppendPattern(pattern, start, i - start - 1, sb);
 
             var pc = pattern[i - 1];
-            sb.Append(pc == '!' ? "(?<!.*(?:" : "(?:");
-
+            sb.Append(pc == '!' ? "((?!(?:" : "(?:");
+            var corePatternBegin = sb.Length - 3;
             var patternFound = false;
 
             var n = 1;
@@ -213,7 +213,13 @@ namespace Shipwreck.Minimatch
                         switch (pc)
                         {
                             case '!':
-                                sb.Append(")).*");
+                                var corePatternEnd = sb.Length;
+                                sb.Append(")).*|");
+                                for (var k = corePatternBegin; k <= corePatternEnd; k++)
+                                {
+                                    sb.Append(sb[k]);
+                                }
+                                sb.Append(".+)");
                                 break;
 
                             case '*':
@@ -233,7 +239,7 @@ namespace Shipwreck.Minimatch
                         return true;
                     }
                 }
-                else if (jc == ',' && n == 1)
+                else if (jc == '|' && n == 1)
                 {
                     if (patternFound)
                     {

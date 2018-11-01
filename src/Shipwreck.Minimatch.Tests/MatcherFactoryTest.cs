@@ -74,6 +74,42 @@ namespace Shipwreck.Minimatch
         }
 
         [Theory]
+        [InlineData("hoge?(fuga)piyo", "hogepiyo", true)]
+        [InlineData("hoge?(fuga)piyo", "hogefugapiyo", true)]
+        [InlineData("hoge?(fuga)piyo", "hogefugafugapiyo", null)]
+        [InlineData("hoge*(fuga)piyo", "hogepiyo", true)]
+        [InlineData("hoge*(fuga)piyo", "hogefugapiyo", true)]
+        [InlineData("hoge*(fuga)piyo", "hogefugafugapiyo", true)]
+        [InlineData("hoge+(fuga)piyo", "hogepiyo", null)]
+        [InlineData("hoge+(fuga)piyo", "hogefugapiyo", true)]
+        [InlineData("hoge+(fuga)piyo", "hogefugafugapiyo", true)]
+        [InlineData("hoge@(fuga)piyo", "hogepiyo", null)]
+        [InlineData("hoge@(fuga)piyo", "hogefugapiyo", true)]
+        [InlineData("hoge@(fuga)piyo", "hogefugafugapiyo", null)]
+        [InlineData("hoge!(fuga)piyo", "hogepiyo", true)]
+        [InlineData("hoge!(fuga)piyo", "hogefugapiyo", null)]
+        [InlineData("hoge!(fuga)piyo", "hogefugafugapiyo", true)]
+        [InlineData("hoge?(foo|bar)piyo", "hogepiyo", true)]
+        [InlineData("hoge?(foo|bar)piyo", "hogefoopiyo", true)]
+        [InlineData("hoge?(foo|bar)piyo", "hogebarpiyo", true)]
+        [InlineData("hoge?(foo|bar)piyo", "hogebazpiyo", null)]
+        [InlineData("hoge!(foo|bar)piyo", "hogepiyo", true)]
+        [InlineData("hoge!(foo|bar)piyo", "hogefoopiyo", null)]
+        [InlineData("hoge!(foo|bar)piyo", "hogebarpiyo", null)]
+        [InlineData("hoge!(foo|bar)piyo", "hogebazpiyo", true)]
+        public void TestParenthesis(string pattern, string path, bool? result)
+        {
+            var m = new MatcherFactory().Create(pattern);
+
+            if (m.Regex != null)
+            {
+                Out.WriteLine(m.Regex.ToString());
+            }
+
+            Assert.Equal(result, m.IsMatch(path));
+        }
+
+        [Theory]
         [InlineData("{1..3}", 1, 3)]
         [InlineData("{1..100}", 1, 100)]
         [InlineData("{11..13}", 11, 13)]
