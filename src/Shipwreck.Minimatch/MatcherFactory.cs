@@ -16,8 +16,7 @@ namespace Shipwreck.Minimatch
 
         public Matcher Create(string pattern)
         {
-            if (pattern == null
-                || pattern.Length == 0
+            if (string.IsNullOrEmpty(pattern)
                 || pattern[0] == '#')
             {
                 return new Matcher();
@@ -247,6 +246,8 @@ namespace Shipwreck.Minimatch
             min = min.PadLeft(length, '0');
             max = max.PadLeft(length, '0');
 
+            var isZero = true;
+
             if (min.CompareTo(max) > 0)
             {
                 var t = max;
@@ -254,12 +255,19 @@ namespace Shipwreck.Minimatch
                 min = t;
             }
 
+            sb.Append("0*");
+
             for (var i = 0; i < length; i++)
             {
                 var l = min[i];
                 var u = max[i];
+                isZero &= l == '0';
                 if (l == u)
                 {
+                    if (isZero)
+                    {
+                        continue;
+                    }
                     sb.Append(l);
                 }
                 else if (i == length - 1)
@@ -278,9 +286,12 @@ namespace Shipwreck.Minimatch
                 else
                 {
                     sb.Append("(?:");
-                    sb.Append(l);
+                    if (!isZero)
+                    {
+                        sb.Append(l);
+                    }
 
-                    AppendLowerbound(sb, min, i + 1);
+                    AppendLowerbound(sb, min, i + 1, isZero);
                     sb.Append('|');
 
                     if (u > l + 1)
@@ -343,7 +354,7 @@ namespace Shipwreck.Minimatch
             }
         }
 
-        private static void AppendLowerbound(StringBuilder sb, string v, int j)
+        private static void AppendLowerbound(StringBuilder sb, string v, int j, bool isZero)
         {
             var c = v[j];
             if (c == '9')
@@ -351,7 +362,7 @@ namespace Shipwreck.Minimatch
                 sb.Append('9');
                 if (j + 1 < v.Length)
                 {
-                    AppendLowerbound(sb, v, j + 1);
+                    AppendLowerbound(sb, v, j + 1, false);
                 }
             }
             else if (j == v.Length - 1)
@@ -363,8 +374,15 @@ namespace Shipwreck.Minimatch
             else
             {
                 sb.Append("(?:");
-                sb.Append(c);
-                AppendLowerbound(sb, v, j + 1);
+                if (isZero && c == '0')
+                {
+                    AppendLowerbound(sb, v, j + 1, true);
+                }
+                else
+                {
+                    sb.Append(c);
+                    AppendLowerbound(sb, v, j + 1, false);
+                }
                 sb.Append("|[");
                 sb.Append((char)(c + 1));
                 sb.Append('-');

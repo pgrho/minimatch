@@ -75,6 +75,7 @@ namespace Shipwreck.Minimatch
 
         [Theory]
         [InlineData("{1..3}", 1, 3)]
+        [InlineData("{1..100}", 1, 100)]
         [InlineData("{11..13}", 11, 13)]
         [InlineData("{11..23}", 11, 23)]
         [InlineData("{11..33}", 11, 33)]
