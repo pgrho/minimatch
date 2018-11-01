@@ -52,71 +52,10 @@ namespace Shipwreck.Minimatch
             var next = start + length;
             for (var i = start; i < next; i++)
             {
-                var ic = pattern[i];
-
-                if (ic == '{')
+                if (ProcessBrace(pattern, start, length, i, sb)
+                    || ProcessParenthesis(pattern, start, length, i, sb))
                 {
-                    AppendPattern(pattern, start, i - start, sb);
-
-                    var patternFound = false;
-
-                    var n = 1;
-                    for (var j = i + 1; j < next; j++)
-                    {
-                        var jc = pattern[j];
-
-                        if (jc == '{' || IsOpeningParenthesis(pattern, j, i))
-                        {
-                            n++;
-                        }
-                        else if (jc == '}' || (jc == ')' && n > 1))
-                        {
-                            if (--n == 0)
-                            {
-                                var nrm = patternFound ? null : _IsNumericRange.Match(pattern, i + 1, j - i - 1);
-                                if (nrm?.Success == true)
-                                {
-                                    AppendNumberRange(sb, nrm.Groups[1].Value, nrm.Groups[2].Value);
-                                }
-                                else
-                                {
-                                    if (patternFound)
-                                    {
-                                        sb.Append('|');
-                                        AppendPattern(pattern, i + 1, j - i - 1, sb);
-                                        sb.Append(')');
-                                    }
-                                    else
-                                    {
-                                        AppendPattern(pattern, i + 1, j - i - 1, sb);
-                                    }
-                                }
-
-                                AppendPattern(pattern, j + 1, length - j + start - 1, sb);
-
-                                return;
-                            }
-                        }
-                        else if (jc == ',' && n == 1)
-                        {
-                            if (patternFound)
-                            {
-                                sb.Append('|');
-                            }
-                            else
-                            {
-                                sb.Append("(?:");
-                                patternFound = true;
-                            }
-                            AppendPattern(pattern, i + 1, j - i - 1, sb);
-                            i = j;
-                        }
-                    }
-                    throw new FormatException();
-                }
-                else if (IsOpeningParenthesis(pattern, i, start))
-                {
-                    throw new NotSupportedException();
+                    return;
                 }
             }
 
@@ -169,6 +108,146 @@ namespace Shipwreck.Minimatch
             }
 
             AppendLiteralPattern(pattern, sb, last, start + length);
+        }
+
+        private bool ProcessBrace(string pattern, int start, int length, int i, StringBuilder sb)
+        {
+            if (pattern[i] != '{')
+            {
+                return false;
+            }
+            AppendPattern(pattern, start, i - start, sb);
+
+            var patternFound = false;
+
+            var n = 1;
+            var next = start + length;
+            for (var j = i + 1; j < next; j++)
+            {
+                var jc = pattern[j];
+
+                if (jc == '{' || IsOpeningParenthesis(pattern, j, i))
+                {
+                    n++;
+                }
+                else if (jc == '}' || (jc == ')' && n > 1))
+                {
+                    if (--n == 0)
+                    {
+                        var nrm = patternFound ? null : _IsNumericRange.Match(pattern, i + 1, j - i - 1);
+                        if (nrm?.Success == true)
+                        {
+                            AppendNumberRange(sb, nrm.Groups[1].Value, nrm.Groups[2].Value);
+                        }
+                        else
+                        {
+                            if (patternFound)
+                            {
+                                sb.Append('|');
+                                AppendPattern(pattern, i + 1, j - i - 1, sb);
+                                sb.Append(')');
+                            }
+                            else
+                            {
+                                AppendPattern(pattern, i + 1, j - i - 1, sb);
+                            }
+                        }
+
+                        AppendPattern(pattern, j + 1, length - j + start - 1, sb);
+
+                        return true;
+                    }
+                }
+                else if (jc == ',' && n == 1)
+                {
+                    if (patternFound)
+                    {
+                        sb.Append('|');
+                    }
+                    else
+                    {
+                        sb.Append("(?:");
+                        patternFound = true;
+                    }
+                    AppendPattern(pattern, i + 1, j - i - 1, sb);
+                    i = j;
+                }
+            }
+            throw new FormatException();
+        }
+
+        private bool ProcessParenthesis(string pattern, int start, int length, int i, StringBuilder sb)
+        {
+            if (!IsOpeningParenthesis(pattern, i, start))
+            {
+                return false;
+            }
+
+            AppendPattern(pattern, start, i - start, sb);
+
+            var pc = pattern[i - 1];
+            sb.Append(pc == '!' ? "(?<!.*(?:" : "(?:");
+
+            var patternFound = false;
+
+            var n = 1;
+            var next = start + length;
+            for (var j = i + 1; j < next; j++)
+            {
+                var jc = pattern[j];
+
+                if (jc == '{' || IsOpeningParenthesis(pattern, j, i))
+                {
+                    n++;
+                }
+                else if (jc == '}' && n > 1 || jc == ')')
+                {
+                    if (--n == 0)
+                    {
+                        if (patternFound)
+                        {
+                            sb.Append('|');
+                        }
+                        AppendPattern(pattern, i + 1, j - i - 1, sb);
+
+                        switch (pc)
+                        {
+                            case '!':
+                                sb.Append(")).*");
+                                break;
+
+                            case '*':
+                            case '+':
+                            case '?':
+                                sb.Append(')');
+                                sb.Append(pc);
+                                break;
+
+                            default:
+                                sb.Append(')');
+                                break;
+                        }
+
+                        AppendPattern(pattern, j + 1, length - j + start - 1, sb);
+
+                        return true;
+                    }
+                }
+                else if (jc == ',' && n == 1)
+                {
+                    if (patternFound)
+                    {
+                        sb.Append('|');
+                    }
+                    else
+                    {
+                        patternFound = true;
+                    }
+                    AppendPattern(pattern, i + 1, j - i - 1, sb);
+                    i = j;
+                }
+            }
+            throw new FormatException();
         }
 
         private bool IsDirectorySeparator(char c)
