@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2048
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shipwreck.Minimatch", "Shipwreck.Minimatch\Shipwreck.Minimatch.csproj", "{013F1978-D9C8-4CEF-84B5-0D8F6C398A4C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shipwreck.Minimatch.Tests", "Shipwreck.Minimatch.Tests\Shipwreck.Minimatch.Tests.csproj", "{E80A563F-34CE-4431-9BDC-243EC19A4020}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{013F1978-D9C8-4CEF-84B5-0D8F6C398A4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{013F1978-D9C8-4CEF-84B5-0D8F6C398A4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{013F1978-D9C8-4CEF-84B5-0D8F6C398A4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{013F1978-D9C8-4CEF-84B5-0D8F6C398A4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E80A563F-34CE-4431-9BDC-243EC19A4020}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E80A563F-34CE-4431-9BDC-243EC19A4020}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E80A563F-34CE-4431-9BDC-243EC19A4020}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E80A563F-34CE-4431-9BDC-243EC19A4020}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CFBEDBE3-E105-4EA2-B2C6-2114D9889564}
+	EndGlobalSection
+EndGlobal
