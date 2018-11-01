@@ -6,13 +6,24 @@ using System.Text.RegularExpressions;
 
 namespace Shipwreck.Minimatch
 {
-    public sealed class MatcherFactory
+#if MINIMATCH_PUBLIC
+    public
+#else
+    internal
+#endif
+    sealed class MatcherFactory
     {
         private static readonly Regex _IsNumericRange = new Regex(@"^([0-9]+)\.\.([0-9]+)$");
 
         public bool AllowBackslash { get; set; }
+#if MINIMATCH_BACKSLASH
+        = true;
+#endif
 
         public bool IgnoreCase { get; set; }
+#if MINIMATCH_IGNORE_CASE
+        = true;
+#endif
 
         public Matcher Create(string pattern)
         {
@@ -323,7 +334,7 @@ namespace Shipwreck.Minimatch
         private void AppendNonPathSeparatorChar(StringBuilder sb)
             => sb.Append(AllowBackslash ? @"[^\/\\]" : "[^/]");
 
-        #region AppendNumberRange
+#region AppendNumberRange
 
         private static void AppendNumberRange(StringBuilder sb, string min, string max)
         {
@@ -481,7 +492,7 @@ namespace Shipwreck.Minimatch
             }
         }
 
-        #endregion AppendNumberRange
+#endregion AppendNumberRange
 
         public Func<string, bool?> Compile(string pattern)
             => Create(pattern).IsMatch;

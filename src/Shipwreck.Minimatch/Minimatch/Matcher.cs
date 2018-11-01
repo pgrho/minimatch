@@ -2,7 +2,12 @@
 
 namespace Shipwreck.Minimatch
 {
-    public struct Matcher
+#if MINIMATCH_PUBLIC
+    public
+#else
+    internal
+#endif
+    struct Matcher
     {
         internal readonly bool Result;
         internal readonly Regex Regex;

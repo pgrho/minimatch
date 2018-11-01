@@ -1,7 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFrameworks>netstandard1.0;net3.5;net4</TargetFrameworks>
+    <RootNamespace>Shipwreck</RootNamespace>
+    <Version>0.0.1</Version>
+    <Authors>shipwreck.jp</Authors>
+    <Company></Company>
+    <Description>C# minimatch implementation</Description>
+    <Copyright>(c) 2018 shipwreck.jp</Copyright>
+    <RepositoryUrl>https://github.com/pgrho/minimatch</RepositoryUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;MINIMATCH_PUBLIC</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;MINIMATCH_PUBLIC</DefineConstants>
   </PropertyGroup>
 
 </Project>

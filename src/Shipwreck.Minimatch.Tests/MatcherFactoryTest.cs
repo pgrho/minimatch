@@ -53,6 +53,53 @@ namespace Shipwreck.Minimatch
         }
 
         [Theory]
+        [InlineData("a", "a", true)]
+        [InlineData("a", "A", true)]
+        public void TestIgnoreCase(string pattern, string path, bool? result)
+        {
+            var m = new MatcherFactory()
+            {
+                IgnoreCase = true
+            }.Create(pattern);
+
+            if (m.Regex != null)
+            {
+                Out.WriteLine(m.Regex.ToString());
+            }
+
+            Assert.Equal(result, m.IsMatch(path));
+        }
+
+        [Theory]
+        [InlineData(@"a/b", @"a/b", true)]
+        [InlineData(@"a/b", @"a\b", true)]
+        [InlineData(@"a\b", @"a/b", true)]
+        [InlineData(@"a\b", @"a\b", true)]
+        [InlineData(@"a/**/b", @"a/b", true)]
+        [InlineData(@"a/**/b", @"a/c/b", true)]
+        [InlineData(@"a/**/b", @"a/c/d/b", true)]
+        [InlineData(@"a/**/b", @"a\b", true)]
+        [InlineData(@"a/**/b", @"a\c\b", true)]
+        [InlineData(@"a/**/b", @"a\c\d\b", true)]
+        [InlineData(@"a\**\b", @"a/b", true)]
+        [InlineData(@"a\**\b", @"a/c/b", true)]
+        [InlineData(@"a\**\b", @"a/c/d/b", true)]
+        public void TestBackslash(string pattern, string path, bool? result)
+        {
+            var m = new MatcherFactory()
+            {
+                AllowBackslash = true
+            }.Create(pattern);
+
+            if (m.Regex != null)
+            {
+                Out.WriteLine(m.Regex.ToString());
+            }
+
+            Assert.Equal(result, m.IsMatch(path));
+        }
+
+        [Theory]
         [InlineData("{hoge}", "hoge", true)]
         [InlineData("{hoge,fuga/*,**/piyo}", "hoge", true)]
         [InlineData("{hoge,fuga/*,**/piyo}", "fuga", null)]
