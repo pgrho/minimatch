@@ -1,24 +1,23 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Shipwreck.Minimatch
-{
+namespace Shipwreck.Minimatch;
+
 #if MINIMATCH_PUBLIC
-    public
+public
 #else
-    internal
+internal
 #endif
-    struct Matcher
+struct Matcher
+{
+    internal readonly bool Result;
+    internal readonly Regex Regex;
+
+    internal Matcher(bool result, Regex regex)
     {
-        internal readonly bool Result;
-        internal readonly Regex Regex;
-
-        internal Matcher(bool result, Regex regex)
-        {
-            Result = result;
-            Regex = regex;
-        }
-
-        public bool? IsMatch(string s)
-            => s != null && Regex?.IsMatch(s) == true ? Result : (bool?)null;
+        Result = result;
+        Regex = regex;
     }
+
+    public bool? IsMatch(string s)
+        => s != null && Regex?.IsMatch(s) == true ? Result : (bool?)null;
 }
